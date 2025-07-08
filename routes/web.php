@@ -61,7 +61,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/karyawan/dashboard', [KaryawanController::class, 'dashboard'])->name('karyawan.dashboard');
     // Route untuk edit data pribadi karyawan
     Route::get('/karyawan/edit', [KaryawanController::class, 'editPribadi'])->name('karyawan.edit_pribadi');
-    Route::put('/karyawan/edit', [KaryawanController::class, 'updatePribadi'])->name('karyawan.update_pribadi');
+
+    // === PERUBAHAN DI SINI ===
+    // Ubah URI dari '/karyawan/edit' menjadi '/karyawan/profile/update' untuk menghindari konflik
+    Route::put('/karyawan/profile/update', [KaryawanController::class, 'updatePribadi'])->name('karyawan.update_pribadi');
+    
     Route::get('/karyawan/dokumen', [KaryawanController::class, 'showDokumen'])->name('karyawan.dokumen');
 });
 

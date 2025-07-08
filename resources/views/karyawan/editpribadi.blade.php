@@ -66,20 +66,19 @@
             <small class="form-text text-muted">Email tidak dapat diubah. Hubungi admin untuk perubahan.</small>
         </div>
 
-        {{-- Tanggal Lahir (Editable) --}}
+        {{-- Tanggal Lahir --}}
         <div class="mb-3">
             <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
             <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror" 
                    name="tanggal_lahir" 
-                   value="{{ old('tanggal_lahir', $karyawan->tanggal_lahir) }}"
-                   placeholder="Pilih tanggal lahir">
+                   value="{{ old('tanggal_lahir', $karyawan->tanggal_lahir) }}">
             @error('tanggal_lahir')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
             <small class="form-text text-muted">Tanggal lahir harus sebelum hari ini.</small>
         </div>
-        
-        {{-- Nomor Telepon (Editable) --}}
+
+        {{-- Nomor Telepon --}}
         <div class="mb-3">
             <label for="no_hp" class="form-label">Nomor Telepon</label>
             <input type="text" class="form-control @error('no_hp') is-invalid @enderror" 
@@ -93,7 +92,7 @@
             <small class="form-text text-muted">Masukkan nomor telepon yang valid (10-15 digit).</small>
         </div>
 
-        {{-- Alamat (Editable) --}}
+        {{-- Alamat --}}
         <div class="mb-4">
             <label for="alamat" class="form-label">Alamat</label>
             <textarea class="form-control @error('alamat') is-invalid @enderror" 
@@ -122,8 +121,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const noHpInput = document.querySelector('input[name="no_hp"]');
-    
-    // Auto-format nomor HP
     if (noHpInput) {
         noHpInput.addEventListener('input', function() {
             let value = this.value.replace(/[^0-9+]/g, '');
