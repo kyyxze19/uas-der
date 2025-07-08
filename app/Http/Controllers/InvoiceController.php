@@ -16,8 +16,16 @@ class InvoiceController extends Controller
         $invoices = Invoice::with(['proyek', 'items'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+            
+        // Get statistics
+        $stats = [
+            'paid' => Invoice::where('status', 'paid')->count(),
+            'sent' => Invoice::where('status', 'sent')->count(),
+            'draft' => Invoice::where('status', 'draft')->count(),
+            'overdue' => Invoice::where('status', 'overdue')->count()
+        ];
 
-        return view('invoices.index', compact('invoices'));
+        return view('invoices.index', compact('invoices', 'stats'));
     }
 
     public function create()

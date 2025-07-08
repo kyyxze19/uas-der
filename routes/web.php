@@ -61,6 +61,6 @@ Route::delete('/proyek/{id}', [ProyekController::class, 'destroy'])->name('proye
     Route::get('/karyawan/dokumen', [Dashboard::class, 'dokumen'])->name('karyawan.dokumen');
 
 // Invoice routes
-Route::resource('invoices', InvoiceController::class);
-Route::patch('/invoices/{invoice}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.update-status');
-Route::get('/invoices/{invoice}/download-pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.download-pdf');
+Route::resource('invoices', InvoiceController::class)->middleware('auth');
+Route::patch('/invoices/{invoice}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.update-status')->middleware('auth');
+Route::get('/invoices/{invoice}/download-pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.download-pdf')->middleware('auth');

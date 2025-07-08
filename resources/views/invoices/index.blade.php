@@ -34,7 +34,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h6 class="text-success mb-1 fw-semibold">Invoice Lunas</h6>
-              <h3 class="fw-bold text-success mb-0">{{ $invoices->where('status', 'paid')->count() }}</h3>
+              <h3 class="fw-bold text-success mb-0">{{ $stats['paid'] }}</h3>
               <small class="text-muted">Invoice</small>
             </div>
             <div class="bg-success rounded-circle p-3">
@@ -51,7 +51,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h6 class="text-info mb-1 fw-semibold">Invoice Terkirim</h6>
-              <h3 class="fw-bold text-info mb-0">{{ $invoices->where('status', 'sent')->count() }}</h3>
+              <h3 class="fw-bold text-info mb-0">{{ $stats['sent'] }}</h3>
               <small class="text-muted">Invoice</small>
             </div>
             <div class="bg-info rounded-circle p-3">
@@ -68,7 +68,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h6 class="text-warning mb-1 fw-semibold">Invoice Draft</h6>
-              <h3 class="fw-bold text-warning mb-0">{{ $invoices->where('status', 'draft')->count() }}</h3>
+              <h3 class="fw-bold text-warning mb-0">{{ $stats['draft'] }}</h3>
               <small class="text-muted">Invoice</small>
             </div>
             <div class="bg-warning rounded-circle p-3">
@@ -85,7 +85,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h6 class="text-danger mb-1 fw-semibold">Invoice Overdue</h6>
-              <h3 class="fw-bold text-danger mb-0">{{ $invoices->where('status', 'overdue')->count() }}</h3>
+              <h3 class="fw-bold text-danger mb-0">{{ $stats['overdue'] }}</h3>
               <small class="text-muted">Invoice</small>
             </div>
             <div class="bg-danger rounded-circle p-3">
