@@ -1,19 +1,7 @@
 @extends('master')
 
-@sectio                <div class="mb-3">
-                  <label class="form-label fw-semibold">Proyek <span class="text-danger">*</span></label>
-                  <select name="id_proyek" class="form-select @error('id_proyek') is-invalid @enderror" required>
-                    <option value="">Pilih Proyek</option>
-                    @foreach($proyeks as $proyek)
-                      <option value="{{ $proyek->id_proyek }}" {{ old('id_proyek') == $proyek->id_proyek ? 'selected' : '' }}>
-                        {{ $proyek->nama_proyek }}
-                      </option>
-                    @endforeach
-                  </select>
-                  @error('id_proyek')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>Buat Invoice Baru
+@section('judul')
+  Buat Invoice Baru
 @endsection
 
 @section('subjudul')
@@ -41,26 +29,30 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Proyek <span class="text-danger">*</span></label>
-                  <select name="proyek_id" class="form-select @error('proyek_id') is-invalid @enderror" required>
+                  <select name="id_proyek" id="proyekSelect" class="form-select @error('id_proyek') is-invalid @enderror" required onchange="updateClientInfo()">
                     <option value="">Pilih Proyek</option>
                     @foreach($proyeks as $proyek)
-                      <option value="{{ $proyek->id_proyek }}" {{ old('proyek_id') == $proyek->id_proyek ? 'selected' : '' }}>
+                      <option value="{{ $proyek->id_proyek }}" 
+                              data-client="{{ $proyek->klien }}"
+                              data-lokasi="{{ $proyek->lokasi_proyek }}"
+                              {{ old('id_proyek') == $proyek->id_proyek ? 'selected' : '' }}>
                         {{ $proyek->nama_proyek }}
                       </option>
                     @endforeach
                   </select>
-                  @error('proyek_id')
+                  @error('id_proyek')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
                 </div>
 
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Nama Client <span class="text-danger">*</span></label>
-                  <input type="text" name="client_name" class="form-control @error('client_name') is-invalid @enderror" 
-                         value="{{ old('client_name') }}" required>
+                  <input type="text" name="client_name" id="clientName" class="form-control @error('client_name') is-invalid @enderror" 
+                         value="{{ old('client_name') }}" required readonly>
                   @error('client_name')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
+                  <small class="form-text text-muted">Nama client akan terisi otomatis setelah memilih proyek</small>
                 </div>
 
                 <div class="mb-3">
@@ -204,6 +196,20 @@
 <script>
   let itemCount = 0;
 
+  function updateClientInfo() {
+    const proyekSelect = document.getElementById('proyekSelect');
+    const clientNameInput = document.getElementById('clientName');
+    
+    if (proyekSelect.value) {
+      const selectedOption = proyekSelect.options[proyekSelect.selectedIndex];
+      const clientName = selectedOption.getAttribute('data-client');
+      
+      clientNameInput.value = clientName || '';
+    } else {
+      clientNameInput.value = '';
+    }
+  }
+
   function addItem() {
     const tbody = document.getElementById('itemsTable');
     const row = document.createElement('tr');
@@ -275,6 +281,9 @@
   // Event listeners
   document.addEventListener('DOMContentLoaded', function() {
     addItem(); // Add first item
+    
+    // Update client info if proyek is already selected (for old values)
+    updateClientInfo();
     
     // Listen for changes in tax rate and discount
     document.querySelector('input[name="tax_rate"]').addEventListener('input', calculateSummary);

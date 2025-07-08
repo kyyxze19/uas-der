@@ -4,10 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\karyawanController;
+use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\ProyekController;
 use App\Http\Controllers\Karyawan\Dashboard;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\UserProfileController;
 
 
 /*
@@ -55,12 +56,23 @@ Route::put('/proyek/{id}', [ProyekController::class, 'update'])->name('proyek.up
 Route::delete('/proyek/{id}', [ProyekController::class, 'destroy'])->name('proyek.destroy');
 
 
-    Route::get('/karyawan/dashboard', [Dashboard::class, 'index'])->name('karyawan.dashboard');
-    // Tambahan route kalau lu nanti mau edit data pribadi & dokumen
-    Route::get('/karyawan/edit', [Dashboard::class, 'edit'])->name('karyawan.edit_pribadi');
-    Route::get('/karyawan/dokumen', [Dashboard::class, 'dokumen'])->name('karyawan.dokumen');
+// Karyawan routes (protected)
+Route::middleware('auth')->group(function () {
+    Route::get('/karyawan/dashboard', [KaryawanController::class, 'dashboard'])->name('karyawan.dashboard');
+    // Route untuk edit data pribadi karyawan
+    Route::get('/karyawan/edit', [KaryawanController::class, 'editPribadi'])->name('karyawan.edit_pribadi');
+    Route::put('/karyawan/edit', [KaryawanController::class, 'updatePribadi'])->name('karyawan.update_pribadi');
+    Route::get('/karyawan/dokumen', [KaryawanController::class, 'showDokumen'])->name('karyawan.dokumen');
+});
 
 // Invoice routes
 Route::resource('invoices', InvoiceController::class)->middleware('auth');
 Route::patch('/invoices/{invoice}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.update-status')->middleware('auth');
 Route::get('/invoices/{invoice}/download-pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.download-pdf')->middleware('auth');
+
+// Profile routes
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [UserProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [UserProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+});

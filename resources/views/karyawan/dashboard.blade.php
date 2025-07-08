@@ -19,7 +19,21 @@
                     <img src="{{ asset('assets/images/profile/user-1.jpg') }}" alt="Foto Profil"
                          class="img-fluid rounded-circle mb-3" width="120">
                     <h4 class="card-title">{{ $karyawan->name }}</h4>
-                    <p class="text-muted mb-4">{{ $karyawan->email }}</p>
+                    <p class="text-muted mb-2">{{ $karyawan->email }}</p>
+                    
+                    <!-- Status Badge -->
+                    <div class="mb-3">
+                        @if(strtolower($karyawan->status_keaktifan) == 'aktif')
+                            <span class="badge bg-success fs-6 px-3 py-2">
+                                <i class="ti ti-check me-1"></i>Status: Aktif
+                            </span>
+                        @else
+                            <span class="badge bg-danger fs-6 px-3 py-2">
+                                <i class="ti ti-x me-1"></i>Status: Tidak Aktif
+                            </span>
+                        @endif
+                        <small class="text-muted d-block mt-1">Dikelola oleh admin</small>
+                    </div>
                     
                     <a href="{{ route('karyawan.edit_pribadi') }}" class="btn btn-warning w-100 mb-2">
                         <i class="ti ti-pencil me-1"></i> Edit Data Pribadi
@@ -47,7 +61,12 @@
         <div class="col-lg-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-light">
-                    <h5 class="card-title mb-0">Informasi Detail Karyawan</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Informasi Detail Karyawan</h5>
+                        <small class="text-muted">
+                            <i class="ti ti-database me-1"></i>Data dari database
+                        </small>
+                    </div>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
@@ -77,7 +96,7 @@
                                 <i class="ti ti-phone me-3 fs-5 text-primary"></i>
                                 <strong>Nomor Telepon</strong>
                             </div>
-                            <span>{{ $karyawan->nomor_telepon ?? 'Belum diisi' }}</span>
+                            <span>{{ $karyawan->no_hp ?? 'Belum diisi' }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                             <div class="d-flex align-items-center">
@@ -92,11 +111,16 @@
                                 <strong>Status Karyawan</strong>
                             </div>
                             <span>
-                                @if($karyawan->status_keaktifan == 'Aktif')
-                                    <span class="badge bg-success">Aktif</span>
+                                @if(strtolower($karyawan->status_keaktifan) == 'aktif')
+                                    <span class="badge bg-success">
+                                        <i class="ti ti-check me-1"></i>Aktif
+                                    </span>
                                 @else
-                                    <span class="badge bg-danger">Tidak Aktif</span>
+                                    <span class="badge bg-danger">
+                                        <i class="ti ti-x me-1"></i>Tidak Aktif
+                                    </span>
                                 @endif
+                                <small class="text-muted d-block mt-1">Status diambil dari database</small>
                             </span>
                         </li>
                     </ul>

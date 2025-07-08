@@ -145,13 +145,13 @@
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link justify-content-between"  
-                href="#"
+                href="{{ route('profile.show') }}"
                 aria-expanded="false">
                 <div class="d-flex align-items-center gap-3">
                   <span class="d-flex">
                     <i class="ti ti-user-circle"></i>
                   </span>
-                  <span class="hide-menu">Invoice</span>
+                  <span class="hide-menu">Profil Saya</span>
                 </div>
                 </a>
                 </li>

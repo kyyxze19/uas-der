@@ -30,7 +30,15 @@
             <td>{{ $karyawan->email }}</td>
             <td>{{ $karyawan->nik ?? '-' }}</td>
             <td>{{ $karyawan->jenis_kelamin ?? '-' }}</td>
-            <td>{{ $karyawan->status_keaktifan ?? '-' }}</td>
+            <td>
+                @if($karyawan->status_keaktifan)
+                    <span class="badge bg-{{ strtolower($karyawan->status_keaktifan) == 'aktif' ? 'success' : 'danger' }}">
+                        {{ ucfirst($karyawan->status_keaktifan) }}
+                    </span>
+                @else
+                    <span class="badge bg-secondary">-</span>
+                @endif
+            </td>
             <td>
                 
                 <a href="{{ route('karyawan.edit', $karyawan->id) }}" class="btn btn-sm btn-warning">Edit</a>

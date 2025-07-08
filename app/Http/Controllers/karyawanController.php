@@ -8,6 +8,7 @@ use App\Models\Dokumen; // Kita akan butuh ini untuk fitur download
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth; // Diperlukan untuk data karyawan yang login
 use Illuminate\Support\Facades\Storage; // Diperlukan untuk download file
+use Illuminate\Support\Facades\Log; // Import Log untuk error logging
 
 class KaryawanController extends Controller
 {
@@ -105,32 +106,58 @@ class KaryawanController extends Controller
     public function editPribadi()
     {
         $karyawan = Auth::user();
-        return view('karyawan.edit_pribadi', compact('karyawan'));
+        return view('karyawan.editpribadi', compact('karyawan'));
     }
 
     /**
      * Memproses pembaruan data pribadi oleh karyawan.
      */
-   public function updatePribadi(Request $request)
-{
-    /** @var \App\Models\User $karyawan */
-    $karyawan = Auth::user();
+    public function updatePribadi(Request $request)
+    {
+        try {
+            /** @var \App\Models\User $karyawan */
+            $karyawan = Auth::user();
 
-    $request->validate([
-        'tanggal_lahir'   => 'nullable|date',
-        'nomor_telepon'   => 'nullable|string|max:15',
-        'alamat'          => 'nullable|string|max:255',
-    ]);
+            // Validasi input dengan pesan error yang jelas
+            $validatedData = $request->validate([
+                'tanggal_lahir' => 'nullable|date|before:today',
+                'no_hp'         => 'nullable|string|min:10|max:15|regex:/^[0-9+\-\s]+$/',
+                'alamat'        => 'nullable|string|max:500',
+            ], [
+                'tanggal_lahir.before' => 'Tanggal lahir harus sebelum hari ini',
+                'tanggal_lahir.date' => 'Format tanggal lahir tidak valid',
+                'no_hp.min' => 'Nomor HP minimal 10 karakter',
+                'no_hp.max' => 'Nomor HP maksimal 15 karakter', 
+                'no_hp.regex' => 'Format nomor HP tidak valid (hanya angka, +, -, dan spasi)',
+                'alamat.max' => 'Alamat maksimal 500 karakter',
+            ]);
 
-    $karyawan->fill([
-        'tanggal_lahir'   => $request->tanggal_lahir,
-        'nomor_telepon'   => $request->nomor_telepon,
-        'alamat'          => $request->alamat,
-    ])->save();
+            // Update data ke database
+            $updated = $karyawan->update($validatedData);
 
-    return redirect()->route('karyawan.dashboard')
-                     ->with('success', 'Data pribadi berhasil diperbarui.');
-}
+            if ($updated) {
+                // Pastikan redirect ke dashboard dengan pesan sukses
+                return redirect()->route('karyawan.dashboard')
+                               ->with('success', 'Data pribadi berhasil diperbarui dan tersimpan ke database!');
+            } else {
+                return redirect()->route('karyawan.edit_pribadi')
+                               ->withInput()
+                               ->with('error', 'Gagal menyimpan data ke database. Silakan coba lagi.');
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->route('karyawan.edit_pribadi')
+                           ->withErrors($e->validator)
+                           ->withInput()
+                           ->with('error', 'Terdapat kesalahan dalam pengisian form. Periksa kembali data yang dimasukkan.');
+                           
+        } catch (\Exception $e) {
+            Log::error('Error updating karyawan data: ' . $e->getMessage());
+            return redirect()->route('karyawan.edit_pribadi')
+                           ->withInput()
+                           ->with('error', 'Terjadi kesalahan sistem. Silakan coba lagi atau hubungi administrator.');
+        }
+    }
 
 
     /**

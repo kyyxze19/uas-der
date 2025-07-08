@@ -1,11 +1,11 @@
 @extends('master')
 
 @section('judul')
-  Edit Invoice
+  Buat Invoice Baru
 @endsection
 
 @section('subjudul')
-  {{ $invoice->invoice_number }}
+  Tambah Invoice Proyek
 @endsection
 
 @section('content')
@@ -14,29 +14,25 @@
       <div class="card border-0 shadow-sm">
         <div class="card-header bg-white border-0 pb-0">
           <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title fw-bold mb-0">Edit Invoice</h5>
-            <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-outline-secondary">
+            <h5 class="card-title fw-bold mb-0">Buat Invoice Baru</h5>
+            <a href="{{ route('invoices.index') }}" class="btn btn-outline-secondary">
               <i class="ti ti-arrow-left me-2"></i>Kembali
             </a>
           </div>
         </div>
         <div class="card-body">
-          <form action="{{ route('invoices.update', $invoice) }}" method="POST" id="invoiceForm">
+          <form action="{{ route('invoices.store') }}" method="POST" id="invoiceForm">
             @csrf
-            @method('PUT')
             
             <div class="row">
               <!-- Left Column -->
               <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Proyek <span class="text-danger">*</span></label>
-                  <select name="id_proyek" id="proyekSelect" class="form-select @error('id_proyek') is-invalid @enderror" required onchange="updateClientInfo()">
+                  <select name="id_proyek" class="form-select @error('id_proyek') is-invalid @enderror" required>
                     <option value="">Pilih Proyek</option>
                     @foreach($proyeks as $proyek)
-                      <option value="{{ $proyek->id_proyek }}" 
-                              data-client="{{ $proyek->klien }}"
-                              data-lokasi="{{ $proyek->lokasi_proyek }}"
-                              {{ (old('id_proyek') ?? $invoice->id_proyek) == $proyek->id_proyek ? 'selected' : '' }}>
+                      <option value="{{ $proyek->id_proyek }}" {{ old('id_proyek') == $proyek->id_proyek ? 'selected' : '' }}>
                         {{ $proyek->nama_proyek }}
                       </option>
                     @endforeach
@@ -48,13 +44,9 @@
 
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Nama Client <span class="text-danger">*</span></label>
-                  <input type="text" name="client_name" id="clientName" class="form-control @error('client_name') is-invalid @enderror" 
-                         value="{{ old('client_name') ?? $invoice->client_name }}" required readonly>
+                  <input type="text" name="client_name" class="form-control @error('client_name') is-invalid @enderror" 
+                         value="{{ old('client_name') }}" required>
                   @error('client_name')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                  <small class="form-text text-muted">Nama client akan terisi otomatis setelah memilih proyek</small>
-                </div>
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
                 </div>
@@ -62,7 +54,7 @@
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Email Client <span class="text-danger">*</span></label>
                   <input type="email" name="client_email" class="form-control @error('client_email') is-invalid @enderror" 
-                         value="{{ old('client_email') ?? $invoice->client_email }}" required>
+                         value="{{ old('client_email') }}" required>
                   @error('client_email')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -71,7 +63,7 @@
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Alamat Client <span class="text-danger">*</span></label>
                   <textarea name="client_address" class="form-control @error('client_address') is-invalid @enderror" 
-                            rows="3" required>{{ old('client_address') ?? $invoice->client_address }}</textarea>
+                            rows="3" required>{{ old('client_address') }}</textarea>
                   @error('client_address')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -83,7 +75,7 @@
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Tanggal Invoice <span class="text-danger">*</span></label>
                   <input type="date" name="invoice_date" class="form-control @error('invoice_date') is-invalid @enderror" 
-                         value="{{ old('invoice_date') ?? $invoice->invoice_date->format('Y-m-d') }}" required>
+                         value="{{ old('invoice_date', date('Y-m-d')) }}" required>
                   @error('invoice_date')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -92,7 +84,7 @@
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Jatuh Tempo <span class="text-danger">*</span></label>
                   <input type="date" name="due_date" class="form-control @error('due_date') is-invalid @enderror" 
-                         value="{{ old('due_date') ?? $invoice->due_date->format('Y-m-d') }}" required>
+                         value="{{ old('due_date', date('Y-m-d', strtotime('+30 days'))) }}" required>
                   @error('due_date')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -101,7 +93,7 @@
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Pajak (%)</label>
                   <input type="number" name="tax_rate" class="form-control @error('tax_rate') is-invalid @enderror" 
-                         value="{{ old('tax_rate') ?? $invoice->tax_rate }}" min="0" max="100" step="0.01">
+                         value="{{ old('tax_rate', 0) }}" min="0" max="100" step="0.01">
                   @error('tax_rate')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -110,7 +102,7 @@
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Diskon (Rp)</label>
                   <input type="number" name="discount_amount" class="form-control @error('discount_amount') is-invalid @enderror" 
-                         value="{{ old('discount_amount') ?? $invoice->discount_amount }}" min="0" step="0.01">
+                         value="{{ old('discount_amount', 0) }}" min="0" step="0.01">
                   @error('discount_amount')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -121,7 +113,7 @@
             <div class="mb-4">
               <label class="form-label fw-semibold">Catatan</label>
               <textarea name="notes" class="form-control @error('notes') is-invalid @enderror" 
-                        rows="3" placeholder="Catatan tambahan untuk invoice...">{{ old('notes') ?? $invoice->notes }}</textarea>
+                        rows="3" placeholder="Catatan tambahan untuk invoice...">{{ old('notes') }}</textarea>
               @error('notes')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
@@ -148,7 +140,7 @@
                     </tr>
                   </thead>
                   <tbody id="itemsTable">
-                    <!-- Existing items will be populated here -->
+                    <!-- Items will be added here -->
                   </tbody>
                 </table>
               </div>
@@ -183,9 +175,9 @@
 
             <div class="mt-4">
               <button type="submit" class="btn btn-primary me-2">
-                <i class="ti ti-device-floppy me-2"></i>Update Invoice
+                <i class="ti ti-device-floppy me-2"></i>Simpan Invoice
               </button>
-              <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-outline-secondary">
+              <a href="{{ route('invoices.index') }}" class="btn btn-outline-secondary">
                 <i class="ti ti-x me-2"></i>Batal
               </a>
             </div>
@@ -199,35 +191,20 @@
 @section('scripts')
 <script>
   let itemCount = 0;
-  const existingItems = @json($invoice->items);
 
-  function updateClientInfo() {
-    const proyekSelect = document.getElementById('proyekSelect');
-    const clientNameInput = document.getElementById('clientName');
-    
-    if (proyekSelect.value) {
-      const selectedOption = proyekSelect.options[proyekSelect.selectedIndex];
-      const clientName = selectedOption.getAttribute('data-client');
-      
-      clientNameInput.value = clientName || '';
-    } else {
-      clientNameInput.value = '';
-    }
-  }
-
-  function addItem(description = '', quantity = 1, unitPrice = 0) {
+  function addItem() {
     const tbody = document.getElementById('itemsTable');
     const row = document.createElement('tr');
     
     row.innerHTML = `
       <td>
-        <input type="text" name="items[${itemCount}][description]" class="form-control" placeholder="Deskripsi item..." value="${description}" required>
+        <input type="text" name="items[${itemCount}][description]" class="form-control" placeholder="Deskripsi item..." required>
       </td>
       <td>
-        <input type="number" name="items[${itemCount}][quantity]" class="form-control quantity" min="1" value="${quantity}" required onchange="calculateItemTotal(this)">
+        <input type="number" name="items[${itemCount}][quantity]" class="form-control quantity" min="1" value="1" required onchange="calculateItemTotal(this)">
       </td>
       <td>
-        <input type="number" name="items[${itemCount}][unit_price]" class="form-control unit-price" min="0" step="0.01" value="${unitPrice}" required onchange="calculateItemTotal(this)">
+        <input type="number" name="items[${itemCount}][unit_price]" class="form-control unit-price" min="0" step="0.01" required onchange="calculateItemTotal(this)">
       </td>
       <td>
         <span class="item-total">Rp 0</span>
@@ -241,12 +218,6 @@
     
     tbody.appendChild(row);
     itemCount++;
-    
-    // Calculate total for this item
-    const quantityInput = row.querySelector('.quantity');
-    const unitPriceInput = row.querySelector('.unit-price');
-    const total = quantity * unitPrice;
-    row.querySelector('.item-total').textContent = `Rp ${formatNumber(total)}`;
   }
 
   function removeItem(button) {
@@ -289,23 +260,9 @@
     return new Intl.NumberFormat('id-ID').format(num);
   }
 
-  // Initialize
+  // Event listeners
   document.addEventListener('DOMContentLoaded', function() {
-    // Load existing items
-    existingItems.forEach(item => {
-      addItem(item.description, item.quantity, item.unit_price);
-    });
-    
-    // If no existing items, add one empty item
-    if (existingItems.length === 0) {
-      addItem();
-    }
-    
-    // Calculate initial summary
-    calculateSummary();
-    
-    // Update client info if proyek is already selected
-    updateClientInfo();
+    addItem(); // Add first item
     
     // Listen for changes in tax rate and discount
     document.querySelector('input[name="tax_rate"]').addEventListener('input', calculateSummary);
