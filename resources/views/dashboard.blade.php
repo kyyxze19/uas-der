@@ -141,8 +141,17 @@
               <span class="badge bg-success-subtle text-success">{{ $chartData['selesai'] }} Proyek</span>
             </div>
             <div class="progress" style="height: 8px;">
+              @php
+                $totalProyek = $chartData['selesai'] + $chartData['berjalan'] + $chartData['belum_selesai'];
+                $persentaseSelesai = $totalProyek > 0 ? ($chartData['selesai'] / $totalProyek) * 100 : 0;
+              @endphp
               <div class="progress-bar bg-success" role="progressbar" 
-                   style="width: {{ $chartData['selesai'] > 0 ? ($chartData['selesai'] / max(1, $chartData['selesai'] + $chartData['berjalan'] + $chartData['belum_selesai'])) * 100 : 0 }}%"></div>
+                   style="width: {{ number_format($persentaseSelesai, 1) }}%"
+                   aria-valuenow="{{ $chartData['selesai'] }}" 
+                   aria-valuemin="0" 
+                   aria-valuemax="{{ $totalProyek }}">
+                {{ number_format($persentaseSelesai, 1) }}%
+              </div>
             </div>
           </div>
           
@@ -153,8 +162,16 @@
               <span class="badge bg-warning-subtle text-warning">{{ $chartData['berjalan'] }} Proyek</span>
             </div>
             <div class="progress" style="height: 8px;">
+              @php
+                $persentaseBerjalan = $totalProyek > 0 ? ($chartData['berjalan'] / $totalProyek) * 100 : 0;
+              @endphp
               <div class="progress-bar bg-warning" role="progressbar" 
-                   style="width: {{ $chartData['berjalan'] > 0 ? ($chartData['berjalan'] / max(1, $chartData['selesai'] + $chartData['berjalan'] + $chartData['belum_selesai'])) * 100 : 0 }}%"></div>
+                   style="width: {{ number_format($persentaseBerjalan, 1) }}%"
+                   aria-valuenow="{{ $chartData['berjalan'] }}" 
+                   aria-valuemin="0" 
+                   aria-valuemax="{{ $totalProyek }}">
+                {{ number_format($persentaseBerjalan, 1) }}%
+              </div>
             </div>
           </div>
           
@@ -165,8 +182,16 @@
               <span class="badge bg-danger-subtle text-danger">{{ $chartData['belum_selesai'] }} Proyek</span>
             </div>
             <div class="progress" style="height: 8px;">
+              @php
+                $persentaseBelumSelesai = $totalProyek > 0 ? ($chartData['belum_selesai'] / $totalProyek) * 100 : 0;
+              @endphp
               <div class="progress-bar bg-danger" role="progressbar" 
-                   style="width: {{ $chartData['belum_selesai'] > 0 ? ($chartData['belum_selesai'] / max(1, $chartData['selesai'] + $chartData['berjalan'] + $chartData['belum_selesai'])) * 100 : 0 }}%"></div>
+                   style="width: {{ number_format($persentaseBelumSelesai, 1) }}%"
+                   aria-valuenow="{{ $chartData['belum_selesai'] }}" 
+                   aria-valuemin="0" 
+                   aria-valuemax="{{ $totalProyek }}">
+                {{ number_format($persentaseBelumSelesai, 1) }}%
+              </div>
             </div>
           </div>
           
