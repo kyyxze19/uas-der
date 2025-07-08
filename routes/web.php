@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\karyawanController;
 use App\Http\Controllers\ProyekController;
 use App\Http\Controllers\Karyawan\Dashboard;
+use App\Http\Controllers\InvoiceController;
 
 
 /*
@@ -58,3 +59,8 @@ Route::delete('/proyek/{id}', [ProyekController::class, 'destroy'])->name('proye
     // Tambahan route kalau lu nanti mau edit data pribadi & dokumen
     Route::get('/karyawan/edit', [Dashboard::class, 'edit'])->name('karyawan.edit_pribadi');
     Route::get('/karyawan/dokumen', [Dashboard::class, 'dokumen'])->name('karyawan.dokumen');
+
+// Invoice routes
+Route::resource('invoices', InvoiceController::class);
+Route::patch('/invoices/{invoice}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.update-status');
+Route::get('/invoices/{invoice}/download-pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.download-pdf');
